@@ -2,7 +2,9 @@
 
 namespace app\models;
 
+use Exception;
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "article".
@@ -21,10 +23,10 @@ use Yii;
  * @property ArticleTag[] $articleTags
  * @property Comment[] $comments
  */
-class Article extends \yii\db\ActiveRecord
+class Article extends ActiveRecord
 {
     /**
-     * {@inheritdoc}
+     * @return string
      */
     public static function tableName()
     {
@@ -32,7 +34,7 @@ class Article extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
+     * @return array
      */
     public function rules()
     {
@@ -46,7 +48,7 @@ class Article extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
+     * @return array
      */
     public function attributeLabels()
     {
@@ -64,8 +66,41 @@ class Article extends \yii\db\ActiveRecord
         ];
     }
 
-    public function saveImage($filename){
+    /**
+     * @param $filename
+     * @return bool
+     */
+    public function saveImage($filename)
+    {
         $this->image = $filename;
         return $this->save(false); // запрос в базу на сохранение
+    }
+
+    /**
+     * @return string
+     */
+    public function getImage()
+    {
+        return ($this->image) ? '/uploads/' . $this->image : '/no-image.png';
+    }
+
+    public function deleteImage()
+    {
+        try {
+            $path = Yii::getAlias('@web') . 'uploads/';
+            unlink($path . $this->image);
+        } catch (Exception $e) {
+            // сделать лог ошибки
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function beforeDelete()
+    {
+        $this->deleteImage();
+
+        return parent::beforeDelete();
     }
 }

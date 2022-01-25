@@ -6,6 +6,7 @@ use app\models\Article;
 use app\models\ArticleSearch;
 use app\models\ImageUpload;
 use Yii;
+use yii\helpers\VarDumper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -140,20 +141,30 @@ class ArticleController extends Controller
      * @return string
      * @throws NotFoundHttpException
      */
-    public function actionSetImage($id)
+    public function actionSetImage($id) // слздается экземпляр модели по загрузке картинок
     {
         $model = new ImageUpload;
 
-        if(Yii::$app->request->isPost)
-        {
+        if(Yii::$app->request->isPost) { // а это когда уже загрузили кантинку, грубо говоря это
             $article = $this->findModel($id);
             $file = UploadedFile::getInstance($model, 'image');
-            $model->uploadFile($file);
+//            $model->uploadFile($file);
 
-            $article->saveImage($model->uploadFile($file));
+            if($article->saveImage($model->uploadFile($file, $article->image))) {
+                return $this->redirect(['view', 'id'=>$article->id]);
+            }
         }
-        return $this->render('image', [
+
+        return $this->render('image', [ // когда кнопка не нажата по сути только ретерн есть,
             'model' => $model
         ]); // грузим вьюшку статьи в модулях
+    }
+
+    public function actionSetCategory($id)
+    {
+        $article = $this->findModel($id);
+
+        echo $article->category->title;
+
     }
 }

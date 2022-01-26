@@ -18,7 +18,14 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'content')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'date')->textInput() ?>
+
+
+    <div class="row">
+        <div class="col-md-2">
+            <?= $form->field($model, 'date')->textInput(['type' => 'date']) ?>
+        </div>
+    </div>
+
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

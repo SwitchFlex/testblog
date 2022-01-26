@@ -4,8 +4,10 @@ namespace app\modules\admin\controllers;
 
 use app\models\Article;
 use app\models\ArticleSearch;
+use app\models\Category;
 use app\models\ImageUpload;
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\helpers\VarDumper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -163,8 +165,23 @@ class ArticleController extends Controller
     public function actionSetCategory($id)
     {
         $article = $this->findModel($id);
+        $selectedCategory = $article->category->id;
+        $categories = ArrayHelper::map(Category::find()->all(), $id, 'title' );
 
-        echo $article->category->title;
+        if(Yii::$app->request->isPost)
+        {
+            $category = Yii::$app->request->post('category');
+            $article->saveCategory($category);
+            return $this->redirect(['view', 'id'=>$article->id]);
+        }
 
+        return $this->render('catefory',[
+            'article'=>$article,
+            'selectedCategory'=>$selectedCategory,
+            'categories'=>$categories
+        ]);
     }
+
+
+
 }

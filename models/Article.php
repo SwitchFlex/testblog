@@ -4,6 +4,7 @@ namespace app\models;
 
 use Exception;
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -102,5 +103,18 @@ class Article extends ActiveRecord
         $this->deleteImage();
 
         return parent::beforeDelete();
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getCategory()
+    {
+        return $this->hasOne(Category::class, ['id' => 'category_id']);
+    }
+
+    public function saveCategory($category_id){
+        $this->category_id = $category_id;
+        return $this->save(false);
     }
 }
